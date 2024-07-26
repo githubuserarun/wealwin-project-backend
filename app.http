@@ -1,0 +1,97 @@
+### Signup Request
+POST http://localhost:5000/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "test123"
+}
+
+### Login Request
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "test123"
+}
+
+### Login Request with wrong credentials
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "test1234"
+}
+
+### get all users data
+GET http://localhost:5000/api/auth/users
+
+### remove users
+DELETE  http://localhost:5000/api/auth/remove/668ba732694e607c7acff446
+
+###update user
+PUT http://localhost:5000/api/auth/update
+Content-Type: application/json
+
+{
+  "userId":"668d2d95c479746d025a823d",
+  "userName":"barathkumar",
+  "userEmail":"barathkumar@gmail.com"
+}
+
+###request OTP
+post http://localhost:5000/api/reset/request
+Content-Type: application/json
+
+{
+  "email":"divyapriya@yopmail.com"
+}
+
+###OTP verify
+POST http://localhost:5000/api/reset/verify
+Content-Type: application/json
+
+{
+  "email":"divyapriya@yopmail.com",
+  "otp":"327131"
+}
+
+###password reset
+POST http://localhost:5000/api/reset/reset-pass
+Content-Type: application/json
+
+{
+  "email":"divyapriya@yopmail.com",
+  "newPassword":"Divya@125"
+}
+
+###
+GET  http://localhost:5000/api/product/view
+
+###add category
+POST http://localhost:5000/api/product/add-cat
+Content-Type: application/json
+
+{
+  "category":"sports"
+}
+
+###
+GET  http://localhost:5000/api/category/view-cat
+
+###
+GET  http://localhost:5000/api/category/view-subcat
+
+###
+put http://localhost:5000/api/category//update-subcat
+Content-Type: application/json
+
+{
+"categoryId": "669a11639eb91ff040e51ef7",
+"subcategoryId": "669a12d09eb91ff040e51f1c",
+"subcategoryName": "lap"
+
+}
