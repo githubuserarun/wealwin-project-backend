@@ -6,15 +6,20 @@ const subcategoryCollection = require('../models/subcategoryModel');
 
 router.post('/add-cat', async (req, res) => {
     const { category } = req.body;
+    const existCategory = await categoryCollection.findOne({category})
+
+    if (existCategory) {
+        return res.status(200).json({ error: 'Category already exist!', status: false });
+    }
 
     if (!category) {
-        return res.status(400).json({ error: 'Category is required', status: false });
+        return res.status(200).json({ error: 'Category is required', status: false });
     }
 
     try {
         const newCategory = new categoryCollection({ category });
         await newCategory.save();
-        res.json({ data: newCategory, status: true });
+        res.json({ data: newCategory, status: true , message: 'category successfully added.' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error', status: false });
