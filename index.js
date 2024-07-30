@@ -14,7 +14,7 @@ db.once('open', () => {
 });
 
 // Serve static files from the 'Uploads' directory
-const uploadsPath = '/home/dev/Arun/Task/interview/Task_2/E-Commerce/Back_end/uploads'; // Adjust the path as per your actual setup
+const uploadsPath = '/home/dev/Arun/E-Commerce/Back_end/uploads'; // Adjust the path as per your actual setup
 
 
 app.use(cors()); 

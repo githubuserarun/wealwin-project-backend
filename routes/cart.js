@@ -3,17 +3,15 @@ const router = express.Router();
 const cartCollection = require("../models/cartModel");
 const jwt = require("jsonwebtoken");
 
+
 const verifyToken = (req, res, next) => {
-  //console.log('enter verify')
 
   const bearerHeader = req.header("Authorization");
-  //console.log('bearerHeader',bearerHeader);
 
   if (typeof bearerHeader !== "undefined") {
     const bearer = bearerHeader.split(" ");
     const bearerToken = bearer[1];
     req.token = bearerToken;
-    //console.log(req.token)
     jwt.verify(req.token, "your_jwt_secret", (err, authData) => {
       if (err) {
         res.status(200).json({ err, statis: false });
@@ -65,10 +63,8 @@ router.post("/add", verifyToken, async (req, res) => {
 router.post("/view", verifyToken, async (req, res) => {
   try {
     const userId = req.authData.user.id;
-    // console.log(userId);
     const data = await cartCollection.find({ userId });
-    // console.log(data)
-    if (!data) {
+      if (!data) {
       res.json({ message: "error occur while fetching cart List" });
     } else {
       res.json({ data: data, message: "successfully fetch cart list" });
@@ -78,18 +74,42 @@ router.post("/view", verifyToken, async (req, res) => {
   }
 });
 
-router.delete("/del/:id", verifyToken, async (req, res) => {
-  //console.log('enter delete')
-  const { id } = req.params;
-  //console.log(id)
+router.post("/cart-len", verifyToken, async (req, res) => {
   try {
     const userId = req.authData.user.id;
-    //console.log(userId);
+    const data = await cartCollection.find({ userId });
+    const cartLength =data.length;
+    if (cartLength===0) {
+      res.json({data:0, message: "your cart is empty", status:true });
+    } else {
+      res.json({ data: cartLength, message: "successfully fetch cart length",status:true });
+    }
+  } catch (err) {
+    res.json({ status: false, message: err });
+  }
+});
+
+router.get("/order-view", async (req, res) => {
+  try {
+    const data = await cartCollection.find().populate("userId", "username");
+    if (!data) {
+      res.json({ message: "error occur while fetching cart List",status:false });
+    } else {
+      res.json({ data: data, message: "successfully fetch cart list",status:true });
+    }
+  } catch (err) {
+    res.json({ status: false, message: err });
+  }
+});
+
+router.delete("/del/:id", verifyToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const userId = req.authData.user.id;
     const findCart = await cartCollection.findByIdAndDelete({
       userId,
       _id: id,
     });
-    // console.log(findCart)
     if (!findCart) {
       res.json({ message: "cart Item not found", status: false });
     } else {
@@ -103,44 +123,6 @@ router.delete("/del/:id", verifyToken, async (req, res) => {
     res.json({ status: false, message: err });
   }
 });
-
-// router.put('/update', async (req, res) => {
-//     const { id, operation } = req.body;
-//     console.log(id, operation)
-//     try {
-//         let findCart;
-
-//         if (operation === "inc") {
-//             findCart = await cartCollection.findByIdAndUpdate({ _id: id },
-//                 {
-//                     cartQuantity: cartQuantity + 1,
-//                     total: total + price
-//                 });
-
-//         }
-//         if (operation === "dec") {
-//             findCart = await cartCollection.findByIdAndUpdate({ _id: id },
-//                 {
-//                     cartQuantity: cartQuantity - 1,
-//                     total: total + price
-//                 });
-
-//         }
-
-//         console.log(findCart)
-
-//         if (!findCart) {
-
-//             res.json({ message: "cart Item not found", status: false })
-//         } else {
-//             res.json({ data: findCart, message: "cart Item successfully updated", status: true })
-//         }
-
-//     } catch (err) {
-//         res.json({ status: false, message: err })
-//     }
-
-// })
 
 router.put("/update", async (req, res) => {
   const { id, operation } = req.body;

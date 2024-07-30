@@ -95,3 +95,9 @@ Content-Type: application/json
 "subcategoryName": "lap"
 
 }
+
+###
+GET http://localhost:5000/api/cart/order-view
+
+###
+GET http://localhost:5000/api/cart/cart-len
