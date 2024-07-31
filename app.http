@@ -101,3 +101,6 @@ GET http://localhost:5000/api/cart/order-view
 
 ###
 GET http://localhost:5000/api/cart/cart-len
+
+###
+PUT http://localhost:5000/api/cart/buy/66a1f94fb9bc156dc1675439

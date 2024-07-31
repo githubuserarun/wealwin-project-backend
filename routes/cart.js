@@ -3,9 +3,7 @@ const router = express.Router();
 const cartCollection = require("../models/cartModel");
 const jwt = require("jsonwebtoken");
 
-
 const verifyToken = (req, res, next) => {
-
   const bearerHeader = req.header("Authorization");
 
   if (typeof bearerHeader !== "undefined") {
@@ -32,6 +30,7 @@ router.post("/add", verifyToken, async (req, res) => {
   const existCartItem = await cartCollection.findOne({
     userId,
     productId: _id,
+    status:false,
   });
 
   try {
@@ -63,8 +62,8 @@ router.post("/add", verifyToken, async (req, res) => {
 router.post("/view", verifyToken, async (req, res) => {
   try {
     const userId = req.authData.user.id;
-    const data = await cartCollection.find({ userId });
-      if (!data) {
+    const data = await cartCollection.find({ userId ,status:false});
+    if (!data) {
       res.json({ message: "error occur while fetching cart List" });
     } else {
       res.json({ data: data, message: "successfully fetch cart list" });
@@ -77,12 +76,16 @@ router.post("/view", verifyToken, async (req, res) => {
 router.post("/cart-len", verifyToken, async (req, res) => {
   try {
     const userId = req.authData.user.id;
-    const data = await cartCollection.find({ userId });
-    const cartLength =data.length;
-    if (cartLength===0) {
-      res.json({data:0, message: "your cart is empty", status:true });
+    const data = await cartCollection.find({ userId,status:false });
+    const cartLength = data.length;
+    if (cartLength === 0) {
+      res.json({ data: 0, message: "your cart is empty", status: true });
     } else {
-      res.json({ data: cartLength, message: "successfully fetch cart length",status:true });
+      res.json({
+        data: cartLength,
+        message: "successfully fetch cart length",
+        status: true,
+      });
     }
   } catch (err) {
     res.json({ status: false, message: err });
@@ -93,9 +96,16 @@ router.get("/order-view", async (req, res) => {
   try {
     const data = await cartCollection.find().populate("userId", "username");
     if (!data) {
-      res.json({ message: "error occur while fetching cart List",status:false });
+      res.json({
+        message: "error occur while fetching cart List",
+        status: false,
+      });
     } else {
-      res.json({ data: data, message: "successfully fetch cart list",status:true });
+      res.json({
+        data: data,
+        message: "successfully fetch cart list",
+        status: true,
+      });
     }
   } catch (err) {
     res.json({ status: false, message: err });
@@ -118,6 +128,26 @@ router.delete("/del/:id", verifyToken, async (req, res) => {
         message: "cart Item successfully deleted",
         status: true,
       });
+    }
+  } catch (err) {
+    res.json({ status: false, message: err });
+  }
+});
+
+router.put("/buy/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const findCart = await cartCollection.findByIdAndUpdate({
+      _id: id},{status:true});
+    if (!findCart) {
+      res.json({ message: "cart Item not found", status: false });
+    } else {
+      res.json({
+        data: findCart,
+        message: "Place order successfully",
+        status: true,
+      });
+      console.log("sold")
     }
   } catch (err) {
     res.json({ status: false, message: err });
